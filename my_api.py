@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS, cross_origin
 from flask import request
 import os
-import my_yolov6
+import my_yolo
 import cv2
 
 # Khởi tạo Flask Server Backend
@@ -13,7 +13,7 @@ CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['UPLOAD_FOLDER'] = "static"
 
-yolov6_model = my_yolov6.my_yolov6("weights/mass_detect.pt", "cpu", "data/data.yaml", 640, False)
+yolov6_model = my_yolo.my_yolov6("weights/mass_detect.pt", "cpu", "data/data.yaml", 640, False)
 
 @app.route('/', methods=['POST'] )
 def predict_yolov6():

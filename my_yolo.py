@@ -9,7 +9,7 @@ from yolov6.layers.common import DetectBackend
 from yolov6.data.data_augment import letterbox
 from yolov6.utils.nms import non_max_suppression
 
-class my_yolov6():
+class my_yolo():
     def __init__(self, weights, device, yaml, img_size, half):
         self.__dict__.update(locals())
 

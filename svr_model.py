@@ -21,9 +21,6 @@ def home_page():
     if request.method == "POST":
         try:
             # Create a new folder to store uploaded dicom files
-            # if os.path.isdir('static') == False:
-            #     uploads = 'static'
-            #     os.mkdir(uploads)
             
             if not os.path.exists('static'):
                 os.mkdir('static')
@@ -42,20 +39,20 @@ def home_page():
 
 
             output_dir = os.path.join(app.config['UPLOAD_FOLDER'])
-            print("output_dir:::",output_dir)
+            # print("output_dir:::",output_dir)
             # # Convert DICOM images to PNG
             image_size_list = convert_dicom_to_png(dicom_list,output_dir)
-            print("image_size_list:::",image_size_list[1])
+            # print("image_size_list:::",image_size_list[1])
 
             image = image_size_list[1]
             # print(image)
             if image:
                 # Lưu file
 
-                print("image.filename::::",image)
+                # print("image.filename::::",image)
                 path_to_save = os.path.join(app.config['UPLOAD_FOLDER'], image)
                
-                print("path_to_save:::",path_to_save)
+                # print("path_to_save:::",path_to_save)
 
                 # image.save(path_to_save)
 
@@ -90,4 +87,4 @@ def home_page():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True, port=8080)

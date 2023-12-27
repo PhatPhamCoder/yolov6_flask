@@ -67,39 +67,63 @@
                 </ul>
             </div>
             <hr class="mx-auto my-2 border-red-300" width="30%">
-            <div class='content flex flex-col items-center justify-center'>
-                <div class="flex items-center justify-center gap-4">
-                    <div
-                        class='upload_part rounded-xl border p-2 bg-red-200 flex items-center flex-col gap-4 w-[500px]'>
-                        <button
-                            class='upload_button bg-yellow-200 rounded-xl p-2 text-lg font-bold flex items-center justify-center gap-4 hover:bg-[#143A51] hover:text-white'
-                            id="upload_button">Submit FFDM Dicom File/s <i class="fa-solid fa-upload"></i></button>
+            <div class='content flex flex-col items-center justify-center w-[100%]'>
+                <div
+                    class='upload_part rounded-xl border p-2 bg-red-200 flex items-center justify-center flex-col gap-4 w-[500px]'>
+                    <button
+                        class='upload_button bg-yellow-200 rounded-xl p-2 text-lg font-bold flex items-center justify-center gap-4 hover:bg-[#143A51] hover:text-white'
+                        id="upload_button">Submit FFDM Dicom File/s <i class="fa-solid fa-upload"></i></button>
 
-                        <div class='upload_hint' id='upload_hint'>
-                            Support File extension: DICOM.
-                        </div>
-                        <form action="/" method="POST" enctype="multipart/form-data" id='form'>
-                            <input type="file" name="file" id="fileinput" style="display: none;" accept=".dicom">
-                        </form>
-
-                        <hr width="80%" />
-                        {% if msg %}
-                        <div class='text-lg'><b>Kết quả nhận diện</b></div>
-                        <div class='result_id'>{{ msg }}</div>
-                        {% if ndet > 0 %}
-                        <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2'>Nhận diện được <span
-                                class='result_id_number'>{{ ndet
-                                }} vật
-                                thể</span></div>
-                        {% endif %}
+                    <div class='upload_hint' id='upload_hint'>
+                        Support File extension: DICOM.
                     </div>
-
-                    <div class='result_part w-[70%] h-[90%] mb-4'>
-                        {% if user_image %}
+                    <form action="/" method="POST" enctype="multipart/form-data" id='form'>
+                        <input multiple type="file" name="file" id="fileinput" style="display: none;" accept=".dicom">
+                    </form>
+                </div>
+                <div class="flex px-[2rem] items-center justify-center gap-4">
+                    <div class='result_part flex items-center mb-4'>
+                        <div class="flex items-center">
+                            {% if msg %}
+                            <div class='text-lg'><b>Kết quả nhận diện</b></div>
+                            <div class='result_id'>{{ msg }}</div>
+                            {% if ndet > 0 %}
+                            <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'>Nhận
+                                diện
+                                được <span class='result_id_number'>{{ndet}} vật thể</span></div>
+                            {% endif %}
+                        </div>
+                        <!-- {% if user_image %}
                         <img class="w-[70%] h-[90%]" style="max-width:560px; border-radius:1rem"
                             src="{{ url_for('static', filename=user_image) }}?{{ rand }}" alt="Result Image">
                         {% endif %}
                         {% endif %}
+                        {% if results %}
+                        {% for result in results %} -->
+
+                        <div class="flex items-center">
+                            <div class="image-container flex items-center">
+                                <div class="flex items-center flex-col">
+                                    <img src="{{ url_for('static', filename=result.filename) }}?{{ rand }}"
+                                        alt="Result Image {{ loop.index }}" class="w-[50%]">
+                                    <div class='text-lg'><b>Kết quả nhận diện cho {{ result.filename }}</b></div>
+                                    {% if result.ndet > 0 %}
+                                    <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'>
+                                        Nhận diện được <span class='result_id_number'>{{ result.ndet }} vật thể</span>
+                                    </div>
+                                    {% else %}
+                                    <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'>
+                                        Không nhận diện được vật thể
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    {% else %}
+                                    <p>No results to display.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

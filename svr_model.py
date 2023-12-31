@@ -138,7 +138,8 @@ def home_page():
                         results.append({
                             'filename': filename,
                             'objects': frame,
-                            'ndet': ndet
+                            'ndet': ndet,
+                            "msg": "msg"
                         })
 
                         if ndet != 0:
@@ -163,5 +164,3 @@ def home_page():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8080)
-
-

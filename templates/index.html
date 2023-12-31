@@ -7,7 +7,6 @@
     <title>Mammogram Mass Analyzer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A free desktop Ai tool to detect masses on mammograms.">
-    <!--Link to fonts from Google fonts-->
     <link href="https://fonts.googleapis.com/css?family=Oswald:300" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 
@@ -51,11 +50,34 @@
             background-image: linear-gradient(-45deg, #6a5af9, #d66efd);
             border-radius: 50px;
         }
+
+        /* Add the following CSS for the zoom effect */
+        .img-zoom-container {
+            position: relative;
+        }
+
+        .img-zoom-lens {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            /*set the size of the lens:*/
+            width: 40px;
+            height: 40px;
+        }
+
+        .img-zoom-result {
+            border: 1px solid #d4d4d4;
+            /*set the size of the result div:*/
+            width: 300px;
+            height: 300px;
+            display: none;
+            /* Initially hide the result div */
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 
 <body>
-    <div class="w-full h-[100%] bg-gray-300">
+    <div class="w-full h-[100vh] bg-gray-300">
         <div class="bg-gray-300">
             <h1 class="text-center py-4 text-4xl font-bold text-pink-700 uppercase">Hệ thống nhận Diện khối U bằng Yolo
             </h1>
@@ -83,46 +105,78 @@
                 </div>
                 <div class="flex px-[2rem] items-center justify-center gap-4">
                     <div class='result_part flex items-center mb-4'>
-                        <div class="flex items-center">
-                            {% if msg %}
-                            <div class='text-lg'><b>Kết quả nhận diện</b></div>
-                            <div class='result_id'>{{ msg }}</div>
-                            {% if ndet > 0 %}
+                        <div class="flex items-center flex-col mt-4">
+                            <!-- {% if msg %} -->
+                            <!-- <div class='text-lg'><b>Kết quả nhận diện</b></div> -->
+                            <!-- <div class='result_id'>{{ msg }}</div> -->
+                            {% if result.ndet > 0 %}
                             <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'>Nhận
-                                diện
-                                được <span class='result_id_number'>{{ndet}} vật thể</span></div>
+                                diện được <span class='result_id_number'>{{ndet}} vật thể</span></div>
                             {% endif %}
                         </div>
-                        <!-- {% if user_image %}
-                        <img class="w-[70%] h-[90%]" style="max-width:560px; border-radius:1rem"
-                            src="{{ url_for('static', filename=user_image) }}?{{ rand }}" alt="Result Image">
-                        {% endif %}
-                        {% endif %}
-                        {% if results %}
-                        {% for result in results %} -->
+                        <!-- {% if user_image %} -->
+                        <!-- <img class="w-[70%] h-[90%]" style="max-width:560px; border-radius:1rem" -->
+                        <!-- src="{{ url_for('static', filename=user_image) }}?{{ rand }}" alt="Result Image"> -->
+                        <!-- {% endif %} -->
+                        <!-- {% endif %} -->
+                        <!-- {% if results %} -->
+                        <!-- {% for result in results %}  -->
 
-                        <div class="flex items-center">
-                            <div class="image-container flex items-center">
-                                <div class="flex items-center flex-col">
+                        <!-- <div class="flex items-center"> -->
+                        <!-- <div class="image-container flex items-center flex-wrap"> -->
+                        <!-- <div class="flex items-center "> -->
+                        <!-- <img src="{{ url_for('static', filename=result.filename) }}?{{ rand }}" -->
+                        <!-- alt="Result Image {{ loop.index }}" class="w-[20rem] h-[50%] rounded-lg"> -->
+                        <!-- <div> -->
+                        <!-- <div class='text-lg'><b>Kết quả nhận diện cho {{ result.filename }}</b></div> -->
+                        <!-- {% if result.ndet > 0 %} -->
+                        <!-- <div -->
+                        <!-- class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'> -->
+                        <!-- Nhận diện được <span class='result_id_number'>{{ result.ndet }} vật -->
+                        <!-- thể</span> -->
+                        <!-- </div> -->
+                        <!-- {% else %} -->
+                        <!-- <div -->
+                        <!-- class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'> -->
+                        <!-- Không nhận diện được vật thể -->
+                        <!-- </div> -->
+                        <!-- </div> -->
+                        <!-- {% endif %} -->
+                        <!-- {% endfor %} -->
+
+                        <!-- {% else %} -->
+                        <!-- {% endif %} -->
+                        <!-- </div> -->
+                        <!-- </div> -->
+                        <!-- </div>  -->
+
+                        <div class="flex flex-wrap justify-center gap-4 px-2 mt-4">
+                            {% if results %}
+                            {% for result in results %}
+                            <div class="flex flex-col items-center mb-4">
+                                <div class="image-container img-zoom-container">
                                     <img src="{{ url_for('static', filename=result.filename) }}?{{ rand }}"
-                                        alt="Result Image {{ loop.index }}" class="w-[50%]">
-                                    <div class='text-lg'><b>Kết quả nhận diện cho {{ result.filename }}</b></div>
-                                    {% if result.ndet > 0 %}
-                                    <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'>
-                                        Nhận diện được <span class='result_id_number'>{{ result.ndet }} vật thể</span>
-                                    </div>
-                                    {% else %}
-                                    <div class='text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2 w-[400px]'>
-                                        Không nhận diện được vật thể
-                                    </div>
-                                    {% endif %}
-                                    {% endfor %}
-
-                                    {% else %}
-                                    <p>No results to display.</p>
-                                    {% endif %}
+                                        alt="Result Image {{ loop.index }}" class="w-48 h-68 rounded-lg mb-2"
+                                        id="myimage">
+                                    <div id="myresult" class="img-zoom-result"></div>
                                 </div>
+
+                                <div class="text-lg font-bold mb-2">{{ result.filename }}</div>
+
+                                {% if result.ndet > 0 %}
+                                <div class="text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2">
+                                    Nhận diện được <span class="result_id_number">{{ result.ndet }} vật thể</span>
+                                </div>
+                                {% else %}
+                                <div class="text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2">
+                                    Không nhận diện được vật thể
+                                </div>
+                                {% endif %}
                             </div>
+                            {% endfor %}
+                            {% else %}
+                            <p class="text-center w-full">No results to display.</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -140,6 +194,24 @@
         $('#form').submit();
         $('#upload_hint').text('Đang tải file ' + $('#fileinput')[0].files[0].name + ' lên server...');
     });
+
+    function imageZoom(imgID, resultID) {
+        var img, lens, result, cx, cy;
+        img = document.getElementById(imgID);
+        result = document.getElementById(resultID);
+
+        /* Rest of your existing code */
+
+        function moveLens(e) {
+            /* Your existing moveLens function */
+
+            /* Show the result div when moving the lens: */
+            result.style.display = "block";
+        }
+    }
+
+    // Initiate zoom effect:
+    imageZoom("myimage", "myresult");
 
 </script>
 

@@ -50,29 +50,6 @@
             background-image: linear-gradient(-45deg, #6a5af9, #d66efd);
             border-radius: 50px;
         }
-
-        /* Add the following CSS for the zoom effect */
-        .img-zoom-container {
-            position: relative;
-        }
-
-        .img-zoom-lens {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            /*set the size of the lens:*/
-            width: 40px;
-            height: 40px;
-        }
-
-        .img-zoom-result {
-            border: 1px solid #d4d4d4;
-            /*set the size of the result div:*/
-            width: 300px;
-            height: 300px;
-            display: none;
-            /* Initially hide the result div */
-            background-repeat: no-repeat;
-        }
     </style>
 </head>
 
@@ -100,6 +77,8 @@
                         Support File extension: DICOM.
                     </div>
                     <form action="/" method="POST" enctype="multipart/form-data" id='form'>
+                        <input class="rounded-lg" type="text" name="additional_info" id="additional_info"
+                            placeholder="Information patient">
                         <input multiple type="file" name="file" id="fileinput" style="display: none;" accept=".dicom">
                     </form>
                 </div>
@@ -154,16 +133,15 @@
                             {% if results %}
                             {% for result in results %}
                             <div class="flex flex-col items-center mb-4">
-                                <div class="image-container img-zoom-container">
+                                <div class="image-container">
                                     <img src="{{ url_for('static', filename=result.filename) }}?{{ rand }}"
                                         alt="Result Image {{ loop.index }}" class="w-48 h-68 rounded-lg mb-2"
                                         id="myimage">
-                                    <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="text-lg font-bold mb-2">{{ result.filename }}</div>
+                                <!-- <div class="text-lg font-bold mb-2">{{ result.filename }}</div> -->
 
-                                {% if result.ndet > 0 %}
+                                <!-- {% if result.ndet > 0 %}
                                 <div class="text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2">
                                     Nhận diện được <span class="result_id_number">{{ result.ndet }} vật thể</span>
                                 </div>
@@ -171,7 +149,7 @@
                                 <div class="text-2xl text-red-400 font-bold bg-yellow-300 rounded-xl p-2">
                                     Không nhận diện được vật thể
                                 </div>
-                                {% endif %}
+                                {% endif %} -->
                             </div>
                             {% endfor %}
                             {% else %}
@@ -194,24 +172,6 @@
         $('#form').submit();
         $('#upload_hint').text('Đang tải file ' + $('#fileinput')[0].files[0].name + ' lên server...');
     });
-
-    function imageZoom(imgID, resultID) {
-        var img, lens, result, cx, cy;
-        img = document.getElementById(imgID);
-        result = document.getElementById(resultID);
-
-        /* Rest of your existing code */
-
-        function moveLens(e) {
-            /* Your existing moveLens function */
-
-            /* Show the result div when moving the lens: */
-            result.style.display = "block";
-        }
-    }
-
-    // Initiate zoom effect:
-    imageZoom("myimage", "myresult");
 
 </script>
 

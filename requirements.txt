@@ -1,6 +1,7 @@
 # pip install -r requirements.txt
 # python3.8 environment
 gunicorn
+Flask==2.1.0
 flask
 flask-cors
 torch>=1.8.0

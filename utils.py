@@ -5,17 +5,13 @@ import numpy as np
 from pydicom.pixel_data_handlers.util import apply_voi_lut
 
 def read_xray(path, voi_lut = True, fix_monochrome = True):
-    # Original from: https://www.kaggle.com/raddar/convert-dicom-to-np-array-the-correct-way
     dicom = pydicom.read_file(path)
     
-    # VOI LUT (if available by DICOM device) is used to transform raw DICOM data to 
-    # "human-friendly" view
     if voi_lut:
         data = apply_voi_lut(dicom.pixel_array, dicom)
     else:
         data = dicom.pixel_array
                
-    # depending on this value, X-ray may look inverted - fix that:
     if fix_monochrome and dicom.PhotometricInterpretation == "MONOCHROME1":
         data = np.amax(data) - data
         
@@ -26,7 +22,6 @@ def read_xray(path, voi_lut = True, fix_monochrome = True):
     return data
 
 def convert_dicom_to_png(dicom_file_list, output_dir):
-    # Create the output directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 

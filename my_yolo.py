@@ -3,7 +3,6 @@ import numpy as np
 import math
 import cv2
 
-
 from yolov6.utils.events import load_yaml
 from yolov6.layers.common import DetectBackend
 from yolov6.data.data_augment import letterbox

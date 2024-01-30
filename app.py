@@ -5,8 +5,13 @@ from my_yolo import my_yolo
 import cv2
 from utils import convert_dicom_to_png
 from pymongo import MongoClient
+import pandas as pd
 
 yolov_model = my_yolo("weights/mass_detect.pt", "cpu", "data/data.yaml", 640, True)
+
+# Read CSV file using pandas
+csv_file_path = "data.csv"
+df = pd.read_csv(csv_file_path)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "static"
@@ -51,9 +56,7 @@ def home_page():
                 jpg_names = [filename + ".jpg" for filename in common_elements]
 
                 resultCC = [element for element in jpg_names if 'CC' in element]
-                # print(resultCC)
                 resultMLO = [element for element in jpg_names if 'MLO' in element]
-                # print(resultMLO)
 
                 def custom_sort(filename):
                     is_left = 'R' in filename
@@ -62,12 +65,7 @@ def home_page():
                 resultCC.sort(key=custom_sort, reverse=True)
                 resultMLO.sort(key=custom_sort, reverse=True)
 
-                print(resultCC)
-                print(resultMLO)
-
                 list_name = resultCC + resultMLO
-
-                print(list_name)
 
                 additional_info = request.form['additional_info']
 
@@ -79,9 +77,8 @@ def home_page():
                 for filename in list_name:
                     if filename.endswith(".jpg"):
                         path_to_save = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
                         frame = cv2.imread(path_to_save)
-
+                        
                         print(filename)
                         try:
                             frame, ndet = yolov_model.infer(frame, conf_thres=0.6, iou_thres=0.45)
@@ -96,6 +93,46 @@ def home_page():
                             if ndet != 0:
                                 cv2.imwrite(path_to_save, frame)
                                 print(f"Nhân diện {filename} thành công")
+
+                                # Draw box check
+                                img_row = df[df['name'] == filename]
+                                print(img_row)
+                                if not img_row.empty:
+                                    # Extract the xmin and ymin values from the DataFrame
+                                    x_min = img_row['xmin'].values[0]
+                                    x_max = img_row['xmax'].values[0]
+                                    y_max = img_row['ymax'].values[0]
+                                    y_min = img_row['ymin'].values[0]
+
+                                    # Load the image
+                                    img = cv2.imread(path_to_save)
+
+                                    box_width = x_max - x_min
+                                    box_height = y_max - y_min
+
+                                    box_center_x = int(x_min + (box_width / 2))
+                                    box_center_y = int(y_min + (box_height / 2))
+
+                                    # Calculate the coordinates and size for the rectangle
+                                    w = int(box_width)
+                                    h = int(box_height)
+
+                                    # Calculate top-left corner coordinates
+                                    x = box_center_x - int(w / 2)
+                                    y = box_center_y - int(h / 2)
+
+                                    # Draw rectangle on the image
+                                    img_with_box = img.copy()
+                                    cv2.rectangle(img_with_box, (x, y), (x + w, y + h), (0, 255, 0), 15)
+
+                                    # Save the image with the drawn rectangle
+                                    output_path = f"./static/{filename}"
+                                    cv2.imwrite(output_path, img_with_box)
+                                    print(filename)
+
+                                    cv2.waitKey(0)
+                                else:
+                                    print(f"Không tìm thấy file {filename} trong DataFrame.")
                             else:
                                 print(f"Không nhận diện được vật thể trong file {filename}")
 
@@ -113,6 +150,5 @@ def home_page():
         return render_template('index.html')
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', debug=True, port=8080)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True, port=8080)
 
